@@ -1,12 +1,12 @@
 # 💍 Undangan Pernikahan Digital
-### Satrio Priambodo & Sherly Regita Putri
+### Moch Irfan Setiawan & Kamila Amelia Rahman
 
 > *"Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu pasangan hidup dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya."*
 > — QS. Ar-Rum: 21
 
 ---
 
-## 📅 Ahad, 12 April 2026
+## 📅 Ahad, 30 Agustus 2026
 **Resepsi Pernikahan (Walimatul 'Ursy)**
 Jalan Gede III Kavling HVA No. 30, Pare, Kediri
 
@@ -20,11 +20,11 @@ Jalan Gede III Kavling HVA No. 30, Pare, Kediri
 
 ## 🌐 Akses Undangan
 
-**[satriopria.github.io/invitation](https://satriopria.github.io/invitation)**
+**[irfanxsetiawan.github.io/undangan](https://irfanxsetiawan.github.io/undangan)**
 
 Link personal per tamu:
 ```
-https://satriopria.github.io/invitation/?t=<token>
+https://irfanxsetiawan.github.io/undangan/?t=<token>
 ```
 
 ---
