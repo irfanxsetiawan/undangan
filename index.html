@@ -498,6 +498,23 @@
       position: relative;
     }
 
+    .person-initial {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin: 0 auto 20px;
+      position: relative;
+      border: 2px solid var(--gold);
+    }
+
+    .person-initial img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
     .person-initial::after {
       content: '';
       position: absolute;
@@ -1576,48 +1593,6 @@
       style="margin-top:28px;color:rgba(250,247,242,0.35);font-size:0.82rem;letter-spacing:2px;font-style:italic">
       "Barakallahu laka wa baraka alaika wa jama'a bainakuma fi khair"</p>
   </section>
-  <!-- <script>
-    const targetDate = new Date("2026-08-30T08:00:00+07:00").getTime();
-
-    function updateCountdown() {
-      const now = new Date().getTime();
-      const distance = targetDate - now;
-
-      if (distance <= 0) {
-        document.getElementById("cd-hari").textContent = "00";
-        document.getElementById("cd-jam").textContent = "00";
-        document.getElementById("cd-menit").textContent = "00";
-        document.getElementById("cd-detik").textContent = "00";
-        return;
-      }
-
-      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const hours = Math.floor(
-        (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-      );
-      const minutes = Math.floor(
-        (distance % (1000 * 60 * 60)) / (1000 * 60)
-      );
-      const seconds = Math.floor(
-        (distance % (1000 * 60)) / 1000
-      );
-
-      document.getElementById("cd-hari").textContent =
-        String(days).padStart(2, "0");
-
-      document.getElementById("cd-jam").textContent =
-        String(hours).padStart(2, "0");
-
-      document.getElementById("cd-menit").textContent =
-        String(minutes).padStart(2, "0");
-
-      document.getElementById("cd-detik").textContent =
-        String(seconds).padStart(2, "0");
-    }
-
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
-  </script>s -->
 
   <!-- PASANGAN -->
   <section class="couple-section" id="pasangan">
@@ -1628,15 +1603,17 @@
     </div>
     <div class="couple-grid">
       <div class="person reveal reveal-left reveal-d1">
-        <div class="person-initial">MIS</div>
-        <div class="person-name">MOCH. IRFAN SETIAWAN</div>
-        <div class="person-desc">Putra Ketiga dari<br>Bpk. JAMHURI (Alm.) & Ibu ROBIAH (Almh.)</div>
+        <!-- <div class="person-initial">MIS</div> -->
+        <div class="person-initial"><img src="images/irfan.png" alt="Moch. Irfan Setiawan"></div>
+        <div class="person-name">Moch. Irfan Setiawan, S.Kom.</div>
+        <div class="person-desc">Putra Ketiga dari<br>Bpk. Jamhuri (Alm.) & Ibu Robiah (Almh.)</div>
       </div>
       <div class="couple-amp reveal reveal-d2">&amp;</div>
       <div class="person reveal reveal-right reveal-d1">
-        <div class="person-initial">KAR</div>
-        <div class="person-name">KAMILA AMELIA RAHMAN</div>
-        <div class="person-desc">Putri ketiga dari<br>Bpk. SYAMSU RAHMAN (Alm.) & Ibu WIWIK NURWIJAYATI</div>
+        <!-- <div class="person-initial">KAR</div> -->
+        <div class="person-initial"><img src="images/kamila.png" alt="Kamila Amelia Rahman"></div>
+        <div class="person-name">dr. Kamila Amelia Rahman</div>
+        <div class="person-desc">Putri ketiga dari<br>Bpk. Syamsu Rahman (Alm.) & Ibu Wiwik Nurwijayati</div>
       </div>
     </div>
   </section>
