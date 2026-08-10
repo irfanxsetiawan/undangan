@@ -1501,6 +1501,9 @@
 </head>
 
 <body>
+  <audio id="bgMusic" autoplay loop playsinline preload="auto">
+    <source src="./music/lagu.mp3" type="audio/mpeg">
+  </audio>
 
   <!-- NAV -->
   <nav>
@@ -2504,9 +2507,7 @@
     window.addEventListener('load', () => { updateSessionCheckboxes(); });
   </script>
 
-  <audio id="bgMusic" autoplay loop playsinline preload="auto">
-    <source src="./music/lagu.mp3" type="audio/mpeg">
-  </audio>
+
 
   <script>
     window.addEventListener('load', function () {
@@ -2514,17 +2515,12 @@
 
       music.volume = 0.5;
 
-      const playMusic = () => {
-        music.play().catch(() => {
-          console.log('Autoplay diblokir browser');
-        });
-      };
-
-      playMusic();
+      music.play().catch(function (error) {
+        console.log('Autoplay diblokir:', error);
+      });
     });
   </script>
 
-</body>
 </body>
 
 </html>
