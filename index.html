@@ -2010,7 +2010,7 @@
       // Simpan token secara global agar bisa digunakan RSVP
       window.guestToken = token;
 
-      window.addEventListener('load', async () => {
+      window.addEventListener('DOMContentLoaded', async () => {
 
         if (_DEMO) return;
 
