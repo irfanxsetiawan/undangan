@@ -1497,10 +1497,86 @@
     .toast.show {
       opacity: 1;
     }
+
+    /* ================================
+   OPENING SCREEN
+================================ */
+    #openingScreen {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: #17120f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+
+    #openingScreen.hide {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .opening-content {
+      padding: 30px;
+    }
+
+    .opening-subtitle {
+      font-size: 12px;
+      letter-spacing: 4px;
+      color: #c9a84c;
+      margin-bottom: 20px;
+    }
+
+    .opening-content h1 {
+      font-size: 42px;
+      color: #f5efe5;
+      margin: 0 0 15px;
+      font-family: serif;
+    }
+
+    .opening-content p {
+      color: #c9a84c;
+      margin-bottom: 35px;
+    }
+
+    #openInvitation {
+      padding: 14px 30px;
+      border: 1px solid #c9a84c;
+      background: transparent;
+      color: #c9a84c;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      letter-spacing: 2px;
+      transition: all 0.3s ease;
+    }
+
+    #openInvitation:hover {
+      background: #c9a84c;
+      color: #17120f;
+    }
   </style>
 </head>
 
 <body>
+
+  <!-- COVER PEMBUKA -->
+  <div id="openingScreen">
+    <div class="opening-content">
+      <div class="opening-subtitle">THE WEDDING OF</div>
+
+      <h1>Irfan & Kamila</h1>
+
+      <p>30 Agustus 2026</p>
+
+      <button id="openInvitation">
+        Buka Undangan
+      </button>
+    </div>
+  </div>
   <audio id="bgMusic" controls loop preload="auto">
     <source src="./music/lagu.mp3" type="audio/mpeg">
   </audio>
@@ -1664,7 +1740,7 @@
         <div class="event-detail"><span class="event-detail-icon">○</span> Ahad, 30 Agustus 2026</div>
         <div class="event-detail"><span class="event-detail-icon">○</span> Sesi Akad:</div>
         <div class="event-detail" style="margin-left:20px;margin-top:-4px"><span class="event-detail-icon"
-            id="check-10-13">☐</span> Pukul: 08.00 – Selesai WIB</div>
+            id="check-10-13">☐</span> Pukul: 08.00 – 13.00 WIB</div>
         <!-- <div class="event-detail" style="margin-left:20px;margin-top:-4px"><span class="event-detail-icon"
             id="check-13-15">☐</span> Sesi 2: 13.30 – 15.00 WIB</div>
         <div class="event-detail" style="margin-left:20px;margin-top:-4px"><span class="event-detail-icon"
@@ -1714,7 +1790,7 @@
   </section>
 
   <!-- RSVP -->
-  <section class="rsvp-section" id="rsvp">
+  <!-- <section class="rsvp-section" id="rsvp">
     <div class="centered reveal" style="margin-bottom:48px">
       <div class="section-tag">Konfirmasi Kehadiran</div>
       <div class="section-title" style="color:var(--cream)">Mohon Konfirmasi</div>
@@ -1768,7 +1844,7 @@
       <h3>Terima Kasih!</h3>
       <p>Konfirmasi kehadiran Anda telah kami terima.<br>Kami sangat menantikan kehadiran Anda.</p>
     </div>
-  </section>
+  </section> -->
 
   <!-- FOOTER -->
   <footer>
@@ -2511,13 +2587,27 @@
 
   <script>
     window.addEventListener('load', function () {
+
       const music = document.getElementById('bgMusic');
+      const openingScreen = document.getElementById('openingScreen');
+      const openButton = document.getElementById('openInvitation');
 
       music.volume = 0.5;
 
-      music.play().catch(function (error) {
-        console.log('Autoplay diblokir:', error);
+      openButton.addEventListener('click', function () {
+
+        // Putar musik setelah user melakukan klik
+        music.play().then(function () {
+          console.log('Musik berhasil diputar');
+        }).catch(function (error) {
+          console.log('Musik gagal diputar:', error);
+        });
+
+        // Tutup layar pembuka
+        openingScreen.classList.add('hide');
+
       });
+
     });
   </script>
 
