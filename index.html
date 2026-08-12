@@ -1960,7 +1960,7 @@
     // 1. Ganti _su dengan URL Apps Script Anda (di-split biar tidak mudah dibaca)
     //    Contoh URL asli: https://script.google.com/macros/s/AKfycbxXXX/exec
     //    Split jadi dua bagian bebas, misalnya:
-    const _su = ['https://script.google.com/macros/s/', 'AKfycbzniJMHVRtoRyX4H8iYoNj_Qkg1Vd9RMcxroUbmJyUbsL-H5QFlDOHInL-EqI0yB5e6/exec'];
+    const _su = ['https://script.google.com/macros/s/', 'AKfycbxfXX9xWnNVf5RGr3LEYlkshvMrpukY2oWhEpTt88K_OX7zxkx8-Okl4ZuzSpwiD6u-Ow/exec'];
 
     // 2. ADMIN_PASS_HASH = SHA-256 hash dari password Anda
     //    Password default: admin123  →  hash-nya sudah diisi di bawah
@@ -1987,114 +1987,282 @@
       ).join('');
     }
     function encodeGuestName(name) {
-      const xored = xorString(name, XOR_KEY);
-      return btoa(unescape(encodeURIComponent(xored)))
-        .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+      return name;
     }
+
     function decodeGuestName(token) {
-      try {
-        const b64 = token.replace(/-/g, '+').replace(/_/g, '/');
-        const padded = b64 + '==='.slice((b64.length + 3) % 4 || 4);
-        return xorString(decodeURIComponent(escape(atob(padded))), XOR_KEY);
-      } catch { return null; }
+      return token;
     }
-    function encodeForStorage(name) { return encodeGuestName(name); }
+
+    function encodeForStorage(name) {
+      return name;
+    }
 
     // ---- BACA NAMA TAMU DARI URL ----
+    // ---- BACA TAMU BERDASARKAN TOKEN URL ----
     (function () {
-      const token = new URLSearchParams(window.location.search).get('t');
+
+      const token =
+        new URLSearchParams(window.location.search).get('t');
+
       if (!token) return;
-      const name = decodeGuestName(token);
-      if (!name) return;
 
-      // Legacy (hidden but kept for RSVP prefill)
-      const lbl = document.getElementById('guestGreetingLabel');
-      const nmEl = document.getElementById('guestGreetingName');
-      if (lbl && nmEl) {
-        nmEl.innerHTML = `<em>${name}</em>`;
-      }
+      // Simpan token secara global agar bisa digunakan RSVP
+      window.guestToken = token;
 
-      // New: show below couple name
-      const below = document.getElementById('heroGuestBelow');
-      const belowName = document.getElementById('heroGuestBelowName');
-      if (below && belowName) {
-        belowName.textContent = name;
-        below.classList.remove('hidden');
-      }
+      window.addEventListener('load', async () => {
 
-      // Pre-fill RSVP
-      const inp = document.getElementById('guestName');
-      if (inp) inp.value = name;
-
-      // Centang sesi di section Acara sesuai data Sheet
-      window.addEventListener('load', () => {
         if (_DEMO) return;
 
-        // Check status guest di sheet
-        const params = new URLSearchParams({ action: 'checkSubmitted', name });
-        fetch(`${_getUrl()}?${params}`)
-          .then(r => r.json())
-          .then(d => {
-            const status = d.status; // null = tidak ada, 'Diundang' = generate tapi belum submit, 'Hadir'/'Tidak'/'Ragu' = sudah submit
+        try {
 
-            // Kalau sudah submit RSVP (status bukan null dan bukan "Diundang"), hide form
-            if (status && status !== 'Diundang') {
-              document.getElementById('rsvpForm').style.display = 'none';
-              document.getElementById('rsvpSuccess').style.display = 'block';
+          // Ambil data tamu berdasarkan TOKEN
+          const params = new URLSearchParams({
+            action: 'getGuest',
+            t: token
+          });
+
+          const response =
+            await fetch(`${_getUrl()}?${params}`);
+
+          const data =
+            await response.json();
+
+          // Token tidak ditemukan
+          if (data.error || data.status !== 'ok') {
+
+            console.warn('Token tamu tidak ditemukan');
+
+            const nmEl =
+              document.getElementById('guestGreetingName');
+
+            if (nmEl) {
+              nmEl.innerHTML =
+                '<em>Undangan Tamu</em>';
             }
-          })
-          .catch(() => { }); // silent fail
 
-        // Centang sesi di section Acara sesuai data Sheet
-        const params2 = new URLSearchParams({ action: 'getGuestSlot', name });
-        fetch(`${_getUrl()}?${params2}`)
-          .then(r => r.json())
-          .then(d => {
-            if (!d.slots || !d.slots.trim()) return;
-            const slots = d.slots.split(',').map(s => s.trim());
+            return;
+          }
 
-            // Map nilai sesi dari Sheet ke ID elemen di section Acara
-            const slotMap = {
-              '10:30-12:30': 'check-10-13',
-              '13:00-15:00': 'check-13-15',
-              '15:30-17:00': 'check-16-17',
-            };
+          // Nama asli dari Google Sheet
+          const name = data.name || '';
 
-            slots.forEach(slot => {
-              const elId = slotMap[slot];
-              if (!elId) return;
-              const el = document.getElementById(elId);
-              if (el) {
-                el.textContent = '☑';
-                el.style.color = 'var(--gold)';
-                el.style.fontWeight = '700';
-                // Highlight baris sesinya
-                const row = el.closest('.event-detail');
-                if (row) {
-                  row.style.color = 'var(--dark)';
-                  row.style.fontWeight = '600';
-                  row.style.background = 'rgba(201,168,76,0.08)';
-                  row.style.borderLeft = '3px solid var(--gold)';
-                  row.style.paddingLeft = '8px';
-                  row.style.borderRadius = '2px';
-                }
-              }
+          window.guestName = name;
+
+          // ---- TAMPILKAN NAMA DI UCAPAN ----
+
+          const lbl =
+            document.getElementById('guestGreetingLabel');
+
+          const nmEl =
+            document.getElementById('guestGreetingName');
+
+          if (lbl && nmEl) {
+            nmEl.innerHTML = `<em>${name}</em>`;
+          }
+
+          // ---- TAMPILKAN DI BAWAH NAMA MEMPELAI ----
+
+          const below =
+            document.getElementById('heroGuestBelow');
+
+          const belowName =
+            document.getElementById('heroGuestBelowName');
+
+          if (below && belowName) {
+
+            belowName.textContent = name;
+
+            below.classList.remove('hidden');
+
+          }
+
+          // ---- ISI NAMA FORM RSVP ----
+
+          const inp =
+            document.getElementById('guestName');
+
+          if (inp) {
+            inp.value = name;
+          }
+
+          // ---- CEK STATUS RSVP BERDASARKAN TOKEN ----
+
+          const checkParams =
+            new URLSearchParams({
+              action: 'checkSubmitted',
+              t: token
             });
 
-            // Tambah label "Sesi Anda" di atas slot section
-            const firstCheck = document.getElementById('check-10-13');
-            if (firstCheck) {
-              const label = document.createElement('div');
-              label.style.cssText = 'font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:6px;margin-top:12px;';
-              label.textContent = '✦ Sesi Kehadiran Anda';
-              const parent = firstCheck.closest('.event-detail');
-              if (parent && parent.parentNode) {
-                parent.parentNode.insertBefore(label, parent);
-              }
+          const checkResponse =
+            await fetch(`${_getUrl()}?${checkParams}`);
+
+          const checkData =
+            await checkResponse.json();
+
+          const status =
+            checkData.status;
+
+          if (
+            status &&
+            status !== 'Diundang'
+          ) {
+
+            const form =
+              document.getElementById('rsvpForm');
+
+            const success =
+              document.getElementById('rsvpSuccess');
+
+            if (form) {
+              form.style.display = 'none';
             }
-          })
-          .catch(() => { }); // silent fail
+
+            if (success) {
+              success.style.display = 'block';
+            }
+
+          }
+
+          // ---- AMBIL SESI TAMU BERDASARKAN TOKEN ----
+
+          const slotParams =
+            new URLSearchParams({
+              action: 'getGuestSlot',
+              t: token
+            });
+
+          const slotResponse =
+            await fetch(`${_getUrl()}?${slotParams}`);
+
+          const slotData =
+            await slotResponse.json();
+
+          if (
+            !slotData.slots ||
+            !slotData.slots.trim()
+          ) {
+            return;
+          }
+
+          const slots =
+            slotData.slots
+              .split(',')
+              .map(s => s.trim());
+
+          const slotMap = {
+
+            '10:30-12:30':
+              'check-10-13',
+
+            '13:00-15:00':
+              'check-13-15',
+
+            '15:30-17:00':
+              'check-16-17'
+
+          };
+
+          slots.forEach(slot => {
+
+            const elId =
+              slotMap[slot];
+
+            if (!elId) return;
+
+            const el =
+              document.getElementById(elId);
+
+            if (!el) return;
+
+            el.textContent = '☑';
+
+            el.style.color =
+              'var(--gold)';
+
+            el.style.fontWeight =
+              '700';
+
+            const row =
+              el.closest('.event-detail');
+
+            if (row) {
+
+              row.style.color =
+                'var(--dark)';
+
+              row.style.fontWeight =
+                '600';
+
+              row.style.background =
+                'rgba(201,168,76,0.08)';
+
+              row.style.borderLeft =
+                '3px solid var(--gold)';
+
+              row.style.paddingLeft =
+                '8px';
+
+              row.style.borderRadius =
+                '2px';
+
+            }
+
+          });
+
+          // ---- LABEL SESI ANDA ----
+
+          const firstCheck =
+            document.getElementById(
+              'check-10-13'
+            );
+
+          if (firstCheck) {
+
+            const label =
+              document.createElement('div');
+
+            label.style.cssText =
+              'font-size:0.65rem;' +
+              'letter-spacing:3px;' +
+              'text-transform:uppercase;' +
+              'color:var(--gold);' +
+              'margin-bottom:6px;' +
+              'margin-top:12px;';
+
+            label.textContent =
+              '✦ Sesi Kehadiran Anda';
+
+            const parent =
+              firstCheck.closest(
+                '.event-detail'
+              );
+
+            if (
+              parent &&
+              parent.parentNode
+            ) {
+
+              parent.parentNode.insertBefore(
+                label,
+                parent
+              );
+
+            }
+
+          }
+
+        } catch (err) {
+
+          console.error(
+            'Gagal mengambil data tamu:',
+            err
+          );
+
+        }
+
       });
+
     })();
 
     // ---- PARALLAX ----
@@ -2196,7 +2364,23 @@
       }
 
       try {
-        const params = new URLSearchParams({ action: 'rsvp', name, phone, status: selectedStatus, count, message });
+        const token = window.guestToken;
+
+        if (!token) {
+          showToast('Token undangan tidak ditemukan.');
+          btn.textContent = 'Kirim Konfirmasi';
+          btn.disabled = false;
+          return;
+        }
+
+        const params = new URLSearchParams({
+          action: 'rsvp',
+          t: token,
+          phone,
+          status: selectedStatus,
+          count,
+          message
+        });
         await fetch(`${_getUrl()}?${params}`, { method: 'GET', mode: 'no-cors' });
         localStorage.setItem('_rsvp_ts', now);
         document.getElementById('rsvpForm').style.display = 'none';
@@ -2321,11 +2505,56 @@
 
     // Gabung tamu manual (belum RSVP) + data RSVP dari Sheets
     function mergedGuests() {
-      const rsvpNames = rsvpData.map(r => r.name.toLowerCase());
-      const pending = guestList
-        .filter(g => !rsvpNames.includes(g.name.toLowerCase()))
-        .map(g => ({ ...g, status: 'diundang', count: '—', message: '', timeSlot: '' }));
-      return [...rsvpData.map(g => ({ ...g, timeSlot: g.timeSlot || '' })), ...pending];
+
+      const rsvpNames =
+        rsvpData.map(
+          r => String(r.name || '').toLowerCase()
+        );
+
+      const pending =
+        guestList
+
+          .filter(g =>
+            !rsvpNames.includes(
+              String(g.name || '').toLowerCase()
+            )
+          )
+
+          .map(g => ({
+            ...g,
+
+            // Pastikan token tetap dibawa
+            token: g.token || '',
+
+            status: 'diundang',
+
+            count: '—',
+
+            message: '',
+
+            timeSlot: g.timeSlot || ''
+
+          }));
+
+
+      const confirmed =
+        rsvpData.map(g => ({
+
+          ...g,
+
+          // Token dari Google Sheet
+          token: g.token || '',
+
+          timeSlot: g.timeSlot || ''
+
+        }));
+
+
+      return [
+        ...confirmed,
+        ...pending
+      ];
+
     }
 
     const statusLabel = { hadir: 'Hadir', tidak: 'Tidak Hadir', ragu: 'Masih Ragu', diundang: 'Belum RSVP' };
@@ -2391,7 +2620,7 @@
       <td style="color:var(--muted);font-size:.78rem">${g.time || '—'}</td>
       <td style="max-width:180px;font-size:.78rem;color:rgba(250,247,242,0.5)">${g.message || '—'}</td>
       <td>${timeSlotCell}</td>
-      <td><button class="copy-link-btn" onclick="copyGuestLink('${encodeForStorage(g.name)}')" title="Salin link">🔗</button></td>
+      <td><button class="copy-link-btn" onclick="copyGuestLink('${g.token || ''}')" title="Salin link">🔗</button></td>
       <td><button class="delete-btn" onclick="deleteGuest('${g.name.replace(/'/g, "\\'")}')">✕</button></td>
     </tr>`;
       }).join('');
@@ -2489,45 +2718,274 @@
     }
 
     // ---- TAMBAH TAMU MANUAL ----
-    function addGuestManual() {
-      const name = document.getElementById('newGuestName').value.trim();
-      const phone = document.getElementById('newGuestPhone').value.trim();
-      const timeSlot = document.getElementById('newGuestTimeSlot').value || '';
-      if (!name) { showToast('Nama tamu tidak boleh kosong'); return; }
-      if (!timeSlot) { showToast('Sesi resepsi harus dipilih'); return; }
-      if (!timeSlot) { showToast('Sesi resepsi harus dipilih'); return; }
+    // ---- TAMBAH TAMU MANUAL ----
+    async function addGuestManual() {
 
-      // Simpan lokal
-      if (!guestList.find(g => g.name.toLowerCase() === name.toLowerCase())) {
-        guestList.unshift({
-          id: Date.now(), name, phone, timeSlot,
-          time: new Date().toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' })
-        });
-        saveGuestList();
-        renderStats(); renderTable(currentFilter);
+      const name =
+        document.getElementById('newGuestName').value.trim();
+
+      const phone =
+        document.getElementById('newGuestPhone').value.trim();
+
+      const timeSlot =
+        document.getElementById('newGuestTimeSlot').value || '';
+
+      if (!name) {
+        showToast('Nama tamu tidak boleh kosong');
+        return;
       }
 
-      // Generate link
-      const token = encodeGuestName(name);
-      const url = `${window.location.href.split('?')[0]}?t=${token}`;
-      document.getElementById('linkResultName').textContent = name;
-      document.getElementById('linkResultUrl').value = url;
-      document.getElementById('linkResult').style.display = 'block';
-      document.getElementById('newGuestName').value = '';
-      document.getElementById('newGuestPhone').value = '';
-      document.getElementById('newGuestTimeSlot').value = '';
-      document.getElementById('newGuestName').focus();
+      if (!timeSlot) {
+        showToast('Sesi resepsi harus dipilih');
+        return;
+      }
 
-      // Kirim ke Sheet
-      if (!_DEMO) {
+      // ==========================================
+      // MODE DEMO
+      // ==========================================
+      if (_DEMO) {
+
+        const token = encodeGuestName(name);
+
+        if (!guestList.find(
+          g => g.name.toLowerCase() === name.toLowerCase()
+        )) {
+
+          guestList.unshift({
+            id: Date.now(),
+            name,
+            phone,
+            timeSlot,
+            token,
+            time: new Date().toLocaleString(
+              'id-ID',
+              {
+                dateStyle: 'short',
+                timeStyle: 'short'
+              }
+            )
+          });
+
+          saveGuestList();
+          renderStats();
+          renderTable(currentFilter);
+        }
+
+        const url =
+          `${window.location.href.split('?')[0]}?t=${token}`;
+
+        document.getElementById(
+          'linkResultName'
+        ).textContent = name;
+
+        document.getElementById(
+          'linkResultUrl'
+        ).value = url;
+
+        document.getElementById(
+          'linkResult'
+        ).style.display = 'block';
+
+        return;
+      }
+
+
+      // ==========================================
+      // MODE ONLINE
+      // TOKEN DIBUAT OLEH GOOGLE APPS SCRIPT
+      // ==========================================
+
+      try {
+
+        showToast('Membuat link undangan...');
+
         const params = new URLSearchParams({
-          action: 'addGuest', tok: ADMIN_TOKEN, name, phone, slots: timeSlot,
+
+          action: 'addGuest',
+
+          // Token untuk mengizinkan admin
+          tok: ADMIN_TOKEN,
+
+          // Data tamu
+          name: name,
+
+          phone: phone,
+
+          // Sesi resepsi
+          slots: timeSlot
+
         });
-        fetch(`${_getUrl()}?${params}`)
-          .then(r => r.json())
-          .then(d => showToast(d.status === 'ok' ? 'Tamu disimpan ke Sheet ✓' : 'Gagal simpan ke Sheet'))
-          .catch(() => showToast('Gagal simpan ke Sheet'));
+
+
+        const response =
+          await fetch(
+            `${_getUrl()}?${params.toString()}`
+          );
+
+
+        const data =
+          await response.json();
+
+
+        // ========================================
+        // CEK ERROR DARI APPS SCRIPT
+        // ========================================
+
+        if (data.error) {
+
+          showToast(
+            data.message ||
+            'Gagal membuat link undangan'
+          );
+
+          return;
+        }
+
+
+        // ========================================
+        // TOKEN RANDOM DARI GOOGLE SHEET
+        // ========================================
+
+        const token = data.token;
+
+
+        if (!token) {
+
+          showToast(
+            'Token tidak berhasil dibuat'
+          );
+
+          return;
+        }
+
+
+        // ========================================
+        // SIMPAN JUGA DI LOCAL STORAGE
+        // ========================================
+
+        const existing =
+          guestList.find(
+            g =>
+              g.name.toLowerCase() ===
+              name.toLowerCase()
+          );
+
+
+        if (existing) {
+
+          existing.phone = phone;
+
+          existing.timeSlot = timeSlot;
+
+          existing.token = token;
+
+        } else {
+
+          guestList.unshift({
+
+            id: Date.now(),
+
+            name: name,
+
+            phone: phone,
+
+            timeSlot: timeSlot,
+
+            token: token,
+
+            time:
+              new Date().toLocaleString(
+                'id-ID',
+                {
+                  dateStyle: 'short',
+                  timeStyle: 'short'
+                }
+              )
+
+          });
+
+        }
+
+
+        saveGuestList();
+
+        renderStats();
+
+        renderTable(currentFilter);
+
+        updateSessionCheckboxes();
+
+
+        // ========================================
+        // BUAT LINK UNDANGAN
+        // ========================================
+
+        const baseUrl =
+          window.location.href.split('?')[0];
+
+        const url =
+          `${baseUrl}?t=${encodeURIComponent(token)}`;
+
+
+        // ========================================
+        // TAMPILKAN HASIL
+        // ========================================
+
+        document.getElementById(
+          'linkResultName'
+        ).textContent = name;
+
+
+        document.getElementById(
+          'linkResultUrl'
+        ).value = url;
+
+
+        document.getElementById(
+          'linkResult'
+        ).style.display = 'block';
+
+
+        // ========================================
+        // KOSONGKAN FORM
+        // ========================================
+
+        document.getElementById(
+          'newGuestName'
+        ).value = '';
+
+        document.getElementById(
+          'newGuestPhone'
+        ).value = '';
+
+        document.getElementById(
+          'newGuestTimeSlot'
+        ).value = '';
+
+
+        document.getElementById(
+          'newGuestName'
+        ).focus();
+
+
+        showToast(
+          'Tamu berhasil ditambahkan ✓'
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          'Gagal menambahkan tamu:',
+          error
+        );
+
+        showToast(
+          'Gagal terhubung ke Google Sheets'
+        );
+
       }
+
     }
 
     function copyLinkResult() {
@@ -2537,11 +2995,34 @@
         .catch(() => { document.getElementById('linkResultUrl').select(); document.execCommand('copy'); showToast('Link disalin!'); });
     }
 
-    function copyGuestLink(encodedName) {
-      const url = `${window.location.href.split('?')[0]}?t=${encodedName}`;
+    function copyGuestLink(token) {
+
+      if (!token) {
+        showToast('Token tamu belum tersedia');
+        return;
+      }
+
+      const url =
+        `${window.location.href.split('?')[0]}?t=${encodeURIComponent(token)}`;
+
       navigator.clipboard.writeText(url)
         .then(() => showToast('Link undangan disalin!'))
-        .catch(() => { const ta = document.createElement('textarea'); ta.value = url; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); showToast('Link undangan disalin!'); });
+        .catch(() => {
+          const ta = document.createElement('textarea');
+
+          ta.value = url;
+
+          document.body.appendChild(ta);
+
+          ta.select();
+
+          document.execCommand('copy');
+
+          document.body.removeChild(ta);
+
+          showToast('Link undangan disalin!');
+        });
+
     }
 
     // ---- COUNTDOWN TIMER ----
