@@ -1558,6 +1558,85 @@
       background: #c9a84c;
       color: #17120f;
     }
+
+    /* =========================
+   AMPLOP DIGITAL
+========================= */
+
+    .gift-section {
+      background: var(--dark);
+      padding: 80px 20px;
+    }
+
+    .gift-card {
+      max-width: 500px;
+      margin: 0 auto 24px;
+      padding: 30px 25px;
+      border: 1px solid rgba(201, 168, 76, 0.35);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      text-align: center;
+    }
+
+    .gift-bank {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+
+    .gift-name {
+      color: var(--cream);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.25rem;
+      margin-bottom: 8px;
+    }
+
+    .gift-account {
+      color: var(--cream);
+      font-size: 1.1rem;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+    }
+
+    .gift-owner {
+      color: rgba(250, 247, 242, 0.6);
+      font-size: 0.8rem;
+      margin-bottom: 20px;
+    }
+
+    .gift-actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .gift-btn {
+      padding: 10px 18px;
+      border: 1px solid var(--gold);
+      border-radius: 5px;
+      background: transparent;
+      color: var(--gold-light);
+      cursor: pointer;
+      font-size: 0.75rem;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+    }
+
+    .gift-btn:hover {
+      background: var(--gold);
+      color: var(--dark);
+    }
+
+    .gift-btn.whatsapp {
+      background: var(--gold);
+      color: var(--dark);
+    }
+
+    .gift-btn.whatsapp:hover {
+      background: var(--gold-light);
+    }
   </style>
 </head>
 
@@ -1774,43 +1853,66 @@
   </section>
 
   <!-- AMPLOP DIGITAL -->
+  <!-- AMPLOP DIGITAL -->
   <section class="gift-section" id="amplop">
-    <div class="centered reveal" style="margin-bottom:48px">
+    <div class="centered reveal">
       <div class="section-tag">Tanda Kasih</div>
       <div class="section-title">Amplop Digital</div>
       <div class="thin-rule"></div>
+
+      <p style="color:rgba(250,247,242,.6); max-width:500px; margin:0 auto 35px;">
+        Doa dan kehadiran Anda merupakan hadiah terindah bagi kami.
+        Bagi yang ingin memberikan tanda kasih, dapat melalui rekening berikut.
+      </p>
     </div>
 
-    <p class="gift-intro reveal reveal-d1">
-      Doa dan kehadiran Anda adalah hadiah terindah bagi kami. Bagi yang berkenan memberikan tanda kasih secara digital,
-      dapat melalui rekening berikut.
-    </p>
+    <!-- IRFAN -->
+    <div class="gift-card reveal reveal-d1">
+      <div class="gift-bank">BCA</div>
+      <div class="gift-name">Moch. Irfan Setiawan</div>
 
-    <div class="gift-grid">
-      <div class="gift-card reveal reveal-left reveal-d1">
-        <div class="gift-bank">BCA</div>
-        <div class="gift-number" id="rekIrfan">1234567890</div>
-        <div class="gift-name">a.n. Moch. Irfan Setiawan</div>
-        <div class="gift-actions">
-          <button class="gift-btn secondary" onclick="copyRekening('rekIrfan')">Salin Rekening</button>
-          <button class="gift-btn" onclick="konfirmasiWA('Moch. Irfan Setiawan', 'BCA', '1234567890')">Konfirmasi via
-            WhatsApp</button>
-        </div>
+      <div class="gift-account" id="rekeningIrfan">
+        1234567890
       </div>
 
-      <div class="gift-card reveal reveal-right reveal-d2">
-        <div class="gift-bank">Mandiri</div>
-        <div class="gift-number" id="rekKamila">9876543210</div>
-        <div class="gift-name">a.n. dr. Kamila Amelia Rahman</div>
-        <div class="gift-actions">
-          <button class="gift-btn secondary" onclick="copyRekening('rekKamila')">Salin Rekening</button>
-          <button class="gift-btn"
-            onclick="konfirmasiWA('dr. Kamila Amelia Rahman', 'Mandiri', '9876543210')">Konfirmasi via WhatsApp</button>
-        </div>
+      <div class="gift-owner">
+        a.n. Moch. Irfan Setiawan
+      </div>
+
+      <div class="gift-actions">
+        <button class="gift-btn" onclick="copyRekening('1234567890')">
+          Salin Rekening
+        </button>
+
+        <button class="gift-btn whatsapp" onclick="konfirmasiWA('Irfan', 'BCA', '1234567890')">
+          Konfirmasi via WhatsApp
+        </button>
       </div>
     </div>
 
+    <!-- KAMILA -->
+    <div class="gift-card reveal reveal-d2">
+      <div class="gift-bank">MANDIRI</div>
+      <div class="gift-name">dr. Kamila Amelia Rahman</div>
 
+      <div class="gift-account" id="rekeningKamila">
+        9876543210
+      </div>
+
+      <div class="gift-owner">
+        a.n. dr. Kamila Amelia Rahman
+      </div>
+
+      <div class="gift-actions">
+        <button class="gift-btn" onclick="copyRekening('9876543210')">
+          Salin Rekening
+        </button>
+
+        <button class="gift-btn whatsapp" onclick="konfirmasiWA('Kamila', 'Mandiri', '9876543210')">
+          Konfirmasi via WhatsApp
+        </button>
+      </div>
+    </div>
   </section>
 
   <!-- DOA & AYAT -->
