@@ -1565,64 +1565,115 @@
 
     .gift-section {
       background: var(--dark);
-      padding: 80px 20px;
+      padding: 60px 15px;
+      /* Padding lebih kecil untuk mobile */
       color: var(--cream);
+      box-sizing: border-box;
     }
 
-    .gift-card {
+    /* Header Section */
+    .gift-section .centered {
+      text-align: center;
+    }
+
+    .section-tag {
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .section-title {
+      font-size: 1.8rem;
+      /* Ukuran default mobile */
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 700;
+      color: var(--cream) !important;
+      margin-bottom: 12px;
+    }
+
+    .thin-rule {
+      width: 60px;
+      height: 1px;
+      background: var(--gold);
+      margin: 0 auto 20px;
+      opacity: 0.6;
+    }
+
+    .gift-description {
+      color: rgba(250, 247, 242, 0.7);
       max-width: 500px;
-      margin: 0 auto 24px;
-      padding: 30px 25px;
+      margin: 0 auto 30px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    /* Gift Card */
+    .gift-card {
+      max-width: 480px;
+      margin: 0 auto 20px;
+      padding: 24px 16px;
       border: 1px solid rgba(201, 168, 76, 0.35);
       border-radius: 12px;
       background: rgba(255, 255, 255, 0.03);
       text-align: center;
+      box-sizing: border-box;
     }
 
     .gift-bank {
-      font-size: 1.4rem;
-      font-weight: 600;
+      font-size: 1.3rem;
+      font-weight: 700;
       color: var(--gold);
-      margin-bottom: 12px;
+      margin-bottom: 6px;
     }
 
     .gift-name {
       color: var(--cream);
       font-family: 'Cormorant Garamond', serif;
       font-size: 1.25rem;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     .gift-account {
       color: var(--cream);
       font-size: 1.1rem;
       letter-spacing: 2px;
-      margin-bottom: 20px;
+      font-weight: 600;
+      margin-bottom: 4px;
     }
 
     .gift-owner {
       color: rgba(250, 247, 242, 0.6);
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       margin-bottom: 20px;
     }
 
+    /* Action Buttons (Responsive Layout) */
     .gift-actions {
       display: flex;
-      justify-content: center;
+      flex-direction: column;
+      /* Stack vertikal di HP */
       gap: 10px;
-      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
     }
 
     .gift-btn {
-      padding: 10px 18px;
+      width: 100%;
+      /* Penuh di mobile */
+      padding: 12px 16px;
       border: 1px solid var(--gold);
-      border-radius: 5px;
+      border-radius: 6px;
       background: transparent;
       color: var(--gold-light);
       cursor: pointer;
-      font-size: 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
       letter-spacing: 1px;
       transition: all 0.3s ease;
+      box-sizing: border-box;
     }
 
     .gift-btn:hover {
@@ -1637,6 +1688,36 @@
 
     .gift-btn.whatsapp:hover {
       background: var(--gold-light);
+    }
+
+    /* --- MEDIA QUERY UNTUK PC / DESKTOP (Width > 576px) --- */
+    @media (min-width: 576px) {
+      .gift-section {
+        padding: 80px 20px;
+      }
+
+      .section-tag {
+        font-size: 1rem;
+      }
+
+      .section-title {
+        font-size: 2.3rem;
+      }
+
+      .gift-card {
+        padding: 30px 25px;
+      }
+
+      .gift-actions {
+        flex-direction: row;
+        /* Berdampingan di PC */
+      }
+
+      .gift-btn {
+        width: auto;
+        /* Lebar tombol menyesuaikan teks di PC */
+        flex: 1;
+      }
     }
   </style>
 </head>
