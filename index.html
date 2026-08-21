@@ -1868,7 +1868,7 @@
 
     <!-- IRFAN -->
     <div class="gift-card reveal reveal-d1">
-      <div class="gift-bank">BCA</div>
+      <div class="gift-bank">BRI</div>
       <div class="gift-name">Moch. Irfan Setiawan</div>
 
       <div class="gift-account" id="rekeningIrfan">
@@ -1880,11 +1880,12 @@
       </div>
 
       <div class="gift-actions">
-        <button class="gift-btn" onclick="copyRekening('1234567890')">
+        <button class="gift-btn" onclick="copyRekening('1234567890', this)">
           Salin Rekening
         </button>
 
-        <button class="gift-btn whatsapp" onclick="konfirmasiWA('Irfan', 'BCA', '1234567890')">
+        <button class="gift-btn whatsapp"
+          onclick="konfirmasiWA('Moch. Irfan Setiawan', 'BRI', '1234567890', '6289603486190')">
           Konfirmasi via WhatsApp
         </button>
       </div>
@@ -1892,7 +1893,7 @@
 
     <!-- KAMILA -->
     <div class="gift-card reveal reveal-d2">
-      <div class="gift-bank">MANDIRI</div>
+      <div class="gift-bank">BRI</div>
       <div class="gift-name">dr. Kamila Amelia Rahman</div>
 
       <div class="gift-account" id="rekeningKamila">
@@ -1904,16 +1905,52 @@
       </div>
 
       <div class="gift-actions">
-        <button class="gift-btn" onclick="copyRekening('9876543210')">
+        <button class="gift-btn" onclick="copyRekening('9876543210', this)">
           Salin Rekening
         </button>
 
-        <button class="gift-btn whatsapp" onclick="konfirmasiWA('Kamila', 'Mandiri', '9876543210')">
+        <button class="gift-btn whatsapp"
+          onclick="konfirmasiWA('dr. Kamila Amelia Rahman', 'BRI', '9876543210', '6289603486190')">
           Konfirmasi via WhatsApp
         </button>
       </div>
     </div>
   </section>
+
+  <!-- JAVASCRIPT -->
+  <script>
+    // Fungsi Salin Rekening
+    function copyRekening(noRek, btnElement) {
+      navigator.clipboard.writeText(noRek).then(() => {
+        const originalText = btnElement.innerText;
+        btnElement.innerText = "Tersalin!";
+        btnElement.style.opacity = "0.8";
+
+        setTimeout(() => {
+          btnElement.innerText = originalText;
+          btnElement.style.opacity = "1";
+        }, 2000);
+      }).catch(err => {
+        // Fallback untuk browser/perangkat lama
+        const tempInput = document.createElement("input");
+        tempInput.value = noRek;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempInput);
+
+        alert("Nomor rekening berhasil disalin: " + noRek);
+      });
+    }
+
+    // Fungsi Direct WhatsApp dengan Pesan Otomatis
+    function konfirmasiWA(nama, bank, noRek, noHP) {
+      const teksPesan = `Halo, saya ingin mengonfirmasi hadiah digital untuk ${nama} (Bank ${bank} - ${noRek}).`;
+      const urlWA = `https://wa.me/${noHP}?text=${encodeURIComponent(teksPesan)}`;
+
+      window.open(urlWA, '_blank');
+    }
+  </script>
 
   <!-- DOA & AYAT -->
   <section id="doa" style="background:var(--warm);padding:72px 20px">
